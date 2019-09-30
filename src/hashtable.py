@@ -1,21 +1,25 @@
 # '''
 # Linked List hash table key/value pair
 # '''
+
+
 class LinkedPair:
     def __init__(self, key, value):
         self.key = key
         self.value = value
         self.next = None
 
+
 class HashTable:
     '''
     A hash table that with `capacity` buckets
     that accepts string keys
     '''
+
     def __init__(self, capacity):
+        self.count = 0
         self.capacity = capacity  # Number of buckets in the hash table
         self.storage = [None] * capacity
-
 
     def _hash(self, key):
         '''
@@ -25,7 +29,6 @@ class HashTable:
         '''
         return hash(key)
 
-
     def _hash_djb2(self, key):
         '''
         Hash an arbitrary key using DJB2 hash
@@ -34,14 +37,12 @@ class HashTable:
         '''
         pass
 
-
     def _hash_mod(self, key):
         '''
         Take an arbitrary key and return a valid integer index
         within the storage capacity of the hash table.
         '''
         return self._hash(key) % self.capacity
-
 
     def insert(self, key, value):
         '''
@@ -51,9 +52,12 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.count += 1
+        if self.count >= self.capacity:
+            self.resize()
 
-
+        print(self._hash_mod(self._hash(key)))
+        self.storage[self._hash_mod(self._hash(key))] = value
 
     def remove(self, key):
         '''
@@ -65,7 +69,6 @@ class HashTable:
         '''
         pass
 
-
     def retrieve(self, key):
         '''
         Retrieve the value stored with the given key.
@@ -74,8 +77,7 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
-
+        return self.storage[self._hash_mod(self._hash(key))]
 
     def resize(self):
         '''
@@ -84,8 +86,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        self.capacity *= 2
+        new_storage = [None] * self.capacity
+        for i in range(self.count):
+            new_storage[i] = self.storage[i]
+            print(new_storage[i], self.storage[i])
 
+        self.storage = new_storage
 
 
 if __name__ == "__main__":
