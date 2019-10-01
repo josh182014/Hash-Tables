@@ -52,12 +52,29 @@ class HashTable:
 
         Fill this in.
         '''
-        self.count += 1
-        if self.count >= self.capacity:
-            self.resize()
+        # self.count += 1
+        # if self.count >= self.capacity:
+        #     self.resize()
 
-        print(self._hash_mod(self._hash(key)))
-        self.storage[self._hash_mod(self._hash(key))] = value
+        # print(self._hash_mod(self._hash(key)))
+        # self.storage[self._hash_mod(self._hash(key))] = value
+
+        index = self._hash_mod(key)
+
+        if self.storage[index] is not None:
+            pair = self.storage[index]
+            while pair.next:
+                if pair.key == key:
+                    break
+                pair = pair.next
+
+            if pair.key == key:
+                pair.value = value
+            else:
+                pair.next = LinkedPair(key, value)
+
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
     def remove(self, key):
         '''
@@ -67,7 +84,13 @@ class HashTable:
 
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+
+        if self.storage[index] is None:
+            print("WARNING: KEY NOT FOUND!!!")
+            return
+
+        self.storage[index] = None
 
     def retrieve(self, key):
         '''
@@ -77,7 +100,20 @@ class HashTable:
 
         Fill this in.
         '''
-        return self.storage[self._hash_mod(self._hash(key))]
+        # return self.storage[self._hash_mod(self._hash(key))]
+
+        index = self._hash_mod(key)
+        pair = self.storage[index]
+
+        if pair is None:
+            return None
+
+        while pair.key != key:
+            if pair.next is None:
+                return None
+            pair = pair.next
+
+        return pair.value
 
     def resize(self):
         '''
@@ -86,13 +122,25 @@ class HashTable:
 
         Fill this in.
         '''
+        old_storage = self.storage
         self.capacity *= 2
-        new_storage = [None] * self.capacity
-        for i in range(self.count):
-            new_storage[i] = self.storage[i]
-            print(new_storage[i], self.storage[i])
+        self.storage = [None] * self.capacity
+        # for i in range(self.count):
+        #     new_storage[i] = self.storage[i]
+        #     print(new_storage[i], self.storage[i])
 
-        self.storage = new_storage
+        # instructor:
+        for pair in old_storage:
+            if pair is not None:
+                # new_index = self._hash_mod(pair.key)
+                # new_storage[new_index] = pair
+
+                while pair.next:
+                    self.insert(pair.key, pair.value)
+                    pair = pair.next
+
+                self.insert(pair.key, pair.value)
+        # self.storage = new_storage
 
 
 if __name__ == "__main__":
